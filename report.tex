@@ -1,10 +1,12 @@
 \documentclass[acmtog]{acmart}
 
+\usepackage[utf8]{inputenc}
 \usepackage{booktabs} % For formal tables
+\usepackage{mathtools}
 
 \graphicspath{{img/}{build/}{./}}
 
-\acmPrice{0.00}
+%\acmPrice{0.00}
 
 % The next eight lines come directly from the completed rights form.
 % You MUST replace them with the lines specific to your accepted work.
@@ -20,6 +22,7 @@
 % Use the "authoryear" citation style, and make sure citations are in [square brackets].
 \citestyle{acmauthoryear}
 \setcitestyle{square}
+\setcopyright{none}
 
 % A useful command for controlling the number of authors per row.
 % The default value of "authorsperrow" is 2.
@@ -34,59 +37,78 @@
 \title{Autonomous Calibration of 3D Computer Vision System}
 
 % Authors.
-\author{John DeJohnette}
+\author{Gustaf Waldemarson}
 \affiliation{%
-  \department{Department of Computer Science and Engineering}
-  \institution{University of Minnesota}}
-\email{johnd@umn.edu}
+  \institution{Lund University},
+  \institution{Arm Sweden AB}}
+\email{gustaf.waldemarson@arm.com}
 
-\author{Brittany Rowland-Smith}
+\author{Martin Larsson}
 \affiliation{%
-  \institution{St. Olaf College}}
-\email{br-s@gmail.com}
+  \institution{Lund University}}
+\email{martin.larsson@math.lth.se}
 
-\author{Nicholas Badeeri}
+\author{Olivier Moliner}
 \affiliation{%
-  \institution{MathWorks, Inc.}}
-\email{badeeri@mathworks.com}
+  \institution{Lund University},
+  \institution{Sony}}
+\email{olivier.moliner@sony.com}
 
-\author{Andrew Joseph Foyt}
+\author{Lissy Pellaco}
 \affiliation{%
-  \department{College of Engineering}
-  \institution{University of Houston}}
-\email{foyt_aj@uh.edu}
+  \institution{KTH Royal Institute of Technology}}
+\email{pellaco@kth.se}
+
+\author{Xuechun Xu}
+\affiliation{%
+  \institution{KTH Royal Institute of Technology}}
+\email{chunx@kth.se}
+
+\author{Håkan Carlsson}
+\affiliation{%
+  \institution{KTH Royal Institute of Technology}}
+\email{hakcar@kth.se}
+
+\author{Mina Ferizbegovic}
+\affiliation{%
+  \institution{KTH Royal Institute of Technology}}
+\email{minafe@kth.se}
 
 % This command defines the author string for running heads.
-\renewcommand{\shortauthors}{DeJohnette, Rowland-Smith, Badeeri, and Foyt}
+\renewcommand{\shortauthors}{Waldemarson, Larsson, Moliner, Pellaco, Xu, Carlsson, Ferizbegovic}
 
 % abstract
 \begin{abstract}
-This formatted document contains examples of many of the elements of an abstract or technical paper, including multiple authors, CCS concepts and keywords, sections and subsections, formulae, tables, figures, enumeration environments, and citations and references. 
+  Cameras are often useful for a wide variety of tasks in autonomous systems and
+  with two or more, it is possible to reason about the scene in 3D from each
+  image. However, in order to use the cameras in this way, they must be
+  calibrated beforehand using objects with known geometries. This requires
+  several manual steps that must be repeated each time the internal camera
+  parameters change.
 
-Of particular note to authors preparing work for publication at an event sponsored by ACM SIGGRAPH are the citations and references; although the ACM article default is for numbered citations and references, we use the ``author year'' citation and reference style.
+  This report investigates methods and techniques that can be used to remove
+  this limitation: Using IMU data, the relative positions and orientation of an
+  array of three or more cameras can be estimated and passed on to a vision
+  system for automatically compute the intrinsic camera parameters with minimal
+  or no prior knowledge of the scene. Effectively calibrating the cameras
+  without user intervention.
 \end{abstract}
 
-%CCS
+% CCS
 \begin{CCSXML}
 <ccs2012>
 <concept>
-<concept_id>10010147.10010371.10010372</concept_id>
-<concept_desc>Computing methodologies~Rendering</concept_desc>
-<concept_significance>500</concept_significance>
-</concept>
-<concept>
-<concept_id>10010147.10010371.10010372.10010374</concept_id>
-<concept_desc>Computing methodologies~Ray tracing</concept_desc>
+<concept_id>10010147.10010178.10010224.10010226.10010234</concept_id>
+<concept_desc>Computing methodologies~Camera calibration</concept_desc>
 <concept_significance>500</concept_significance>
 </concept>
 </ccs2012>
 \end{CCSXML}
 
-\ccsdesc[500]{Computing methodologies~Rendering}
-\ccsdesc[500]{Computing methodologies~Ray tracing}
+\ccsdesc[500]{Computing methodologies~Camera calibration}
 
 %keywords
-\keywords{ray tracing, global illumination, octrees, quadtrees}
+\keywords{camera calibration, multiple views, IMU, Scene Reconstruction}
 
 % A "teaser" figure, centered below the title and authors and above the body of the work.
 \begin{teaserfigure}
@@ -100,7 +122,6 @@ Of particular note to authors preparing work for publication at an event sponsor
 
 \section{Introduction}
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce auctor accumsan nulla, vitae pharetra ipsum sagittis sit amet. \cite{Park:2006:DSI, notes2002} Donec ac metus consectetur, venenatis magna sit amet, viverra sapien. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Phasellus eleifend sem sit amet arcu congue tempus. Proin at iaculis orci. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. \cite{Pellacini:2005:LAH} Etiam feugiat dui sit amet ante pellentesque, sed malesuada libero ornare. Curabitur tempor ligula leo, in feugiat urna ornare luctus. Fusce quis metus sit amet neque sagittis elementum. Quisque facilisis quam quis tortor volutpat, et sodales urna efficitur.
 
 \begin{figure}[ht]
   \centering
@@ -108,28 +129,23 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce auctor accumsan n
   \caption{Cel-shaded teapots. Image by Nicolas Sourd [CC-BY-SA-3.0 (http://creativecommons.org/licenses/by-sa/3.0/)], via Wikimedia Commons. (\url{https://goo.gl/5e6tNk}).}
 \end{figure}
 
-Duis sagittis massa odio, consequat ornare mauris imperdiet blandit. \cite{levoy:2000:TDM} Donec vel pulvinar nisl. Nam pretium vitae risus a consectetur. \cite{sako:2001:SSB, fedkiw:2001:VSO, Jobs95} Vestibulum efficitur auctor mauris. Vestibulum nec orci suscipit, faucibus mauris vel, elementum dolor. Phasellus ornare est id commodo cursus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec iaculis enim urna, vitae tincidunt est dictum id. Suspendisse lobortis justo id enim ornare euismod. Fusce quis turpis rhoncus, laoreet lorem eu, porttitor enim. \cite{kartch:2000:ERA, yee:2000:SSA, parke:1996:CFA} Etiam eget tempus velit. Duis iaculis id eros et mollis. Pellentesque non magna a massa rhoncus gravida id eget ex. Donec magna risus, posuere eu velit sit amet, tincidunt cursus leo. Curabitur non ultricies turpis, at sodales sapien.
 
-\section{Exposition}
+\section{Related Work}
 
-Nullam mollis in lectus vitae tempus. Nam pellentesque tincidunt leo id dapibus. Etiam in euismod diam. \cite{ceres-solver, Asaro:1976:POT} Phasellus feugiat ante et dui rhoncus, at dictum elit vehicula. Nunc ut finibus neque. Sed vehicula tristique - as shown in Table \ref{soccer} - odio at interdum. Morbi ex lectus, porttitor vel ipsum id, scelerisque facilisis metus. Cras orci sapien, luctus in eros in, suscipit rhoncus neque. Duis pharetra elit vitae sagittis maximus. Curabitur fermentum justo massa, sed placerat odio aliquam quis. Nam facilisis hendrerit ante eget maximus. Nulla et porttitor nibh, et malesuada turpis. Suspendisse potenti. Nunc ultricies suscipit quam, eget ultrices nisi viverra vitae.
+% TODO: Related work in regard to the IMU calibration.
 
-\begin{table}[ht]
-\begin{center}
-    \caption{Soccer, or football?}
-\label{soccer}
-\begin{tabular}{l*{6}{c}r}
-Team              & P & W & D & L & F  & A & Pts \\
-\hline
-Manchester United & 6 & 4 & 0 & 2 & 10 & 5 & 12  \\
-Celtic            & 6 & 3 & 0 & 3 &  8 & 9 &  9  \\
-Benfica           & 6 & 2 & 1 & 3 &  7 & 8 &  7  \\
-FC Copenhagen     & 6 & 2 & 1 & 3 &  5 & 8 &  7  \\
-\end{tabular}
-\end{center}
-\end{table}
+The problem presented in this report is most similar to the problem presented by
+Bundler~\cite{bundler2006}. That is, using an unstructured collection of images
+estimate the 3D structure of the scene as well as both the intrinsic and
+extrinsic camera parameters. The primary difference in this case is that by
+using the known relative position and orientation of the cameras as provided
+beforehand or by IMUs, we are able to significantly simplify the problem and
+make it easier to calibrate the cameras with limited scene structure or limited
+variation in camera poses inside the scene.
 
-Aliquam sed vehicula neque. Praesent placerat, nisi sit amet condimentum porta, justo tellus dictum eros, quis vestibulum erat massa id sapien. Vestibulum euismod purus dolor, ornare consectetur quam egestas volutpat. Curabitur sollicitudin convallis purus ultrices facilisis. Pellentesque sollicitudin maximus orci quis rutrum. Phasellus a mauris maximus sem mollis sagittis. Vivamus sagittis faucibus tincidunt. Vivamus vel suscipit leo.
+% TODO: Create image to show this. I.e., all cameras primarily from one side, as
+% opposed to everywhere around it as in the case of bundler.
+
 
 \begin{figure}[h]
   \centering
@@ -137,29 +153,153 @@ Aliquam sed vehicula neque. Praesent placerat, nisi sit amet condimentum porta, 
   \caption{1907 Franklin Model D roadster. Photograph by Harris \& Ewing, Inc. [Public domain], via Wikimedia Commons. (\url{https://goo.gl/VLCRBB}).}
 \end{figure}
 
-\subsubsection{Participants}
 
-Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Vivamus maximus a lectus sed dictum. Curabitur pulvinar lectus nec magna molestie consequat. Donec ligula urna, scelerisque et felis sed, euismod feugiat sem. (See equation \ref{eqn:01}.) Donec urna libero, auctor sit amet sem id, malesuada tempor risus. Morbi malesuada lobortis consequat. Aliquam lacinia quam ac tristique sodales. Class aptent taciti sociosqu ad 
-\begin{equation}
-\label{eqn:01}
-P(t)=\frac{b^{\frac{t+1}{T+1}}-b^{\frac{t}{T+1}}}{b-1},
-\end{equation}
-where $t=0,{\ldots}\,,T$, and $b$ is a number greater than $1$, litora torquent per conubia nostra, per inceptos himenaeos.
 
-\begin{multline}
-\label{the-rendering-equation}
-L_o(x, \omega_o, \lambda, t) = L_e(x, \omega_o, \lambda, t)  + \\
-\int_{\Omega} f_r(x, \omega_i, \omega_o, \lambda, t) L_i(x, \omega_i, \lambda, t)(\omega_i \cdot n) \text{d} \omega_i
-\end{multline}
+\section{Method}
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce auctor accumsan nulla, vitae pharetra ipsum sagittis sit amet. Donec ac metus consectetur, venenatis magna sit amet, viverra sapien. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Phasellus eleifend sem sit amet arcu congue tempus. Proin at iaculis orci. (See equation \ref{the-rendering-equation}.) Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Etiam feugiat dui sit amet ante pellentesque, sed malesuada libero ornare. Curabitur tempor ligula leo, in feugiat urna ornare luctus. Fusce quis metus sit amet neque sagittis elementum. Quisque facilisis quam quis tortor volutpat, et sodales urna efficitur.
+\subsection{IMU Calibration}
 
-\section{Conclusions and Future Work}
+\subsection{Camera Calibration}
 
-Nullam vulputate enim ut tortor mollis pharetra. Cras pellentesque sem a accumsan malesuada. Donec at massa nisl. Sed malesuada felis id nisl maximus efficitur. In pretium metus non faucibus pulvinar. Sed pulvinar elit ultrices mauris vehicula, id ultricies purus finibus. Fusce tempus elit molestie, consequat ipsum eget, iaculis nibh. Cras tincidunt, orci in lacinia tempus, mauris leo finibus orci, vitae dignissim dui risus et odio. Sed commodo ultricies nulla, et varius velit aliquam quis. Sed efficitur, ex non facilisis dignissim, lacus orci accumsan massa, dictum facilisis arcu lacus ac leo. Sed quis tellus dictum massa egestas dapibus vel et justo. Nulla euismod lectus ut purus hendrerit porttitor. Suspendisse quis dui ligula. Proin non porta libero. Maecenas vel feugiat urna.
+The majority of the vision part of this project uses off the shelf components
+and algorithms from e.g., OpenCV~\cite{opencv_library} and
+Ceres~\cite{ceres-solver} to solve the various steps involved in this
+problem. All of which are described in detail below.
 
-\begin{acks}The authors would like to thank Dr. Yuhua Li for providing the MATLAB code of the \textit{BEPS} method.The authors would also like to thank the anonymous referees for their valuable comments and helpful suggestions. The work is supported by the \grantsponsor{GS501100001809}{National Natural Science Foundation of China}{https://doi.org/10.13039/501100001809} under Grant No.: ~\grantnum{GS501100001809}{61273304}21 and ~\grantnum[http://www.nnsf.cn/youngscientists]{GS501100001809}{Young Scientists' Support Program}.\end{acks}
+\subsubsection{Feature Detection}
+
+The most important part for making sense of the scene is finding image
+coordinates that are representative of some particular property in the
+image. Colloquially, these are known as image feature, or feature descriptors.
+
+Feature detection has been an active research topic for many years but in this
+paper we settled for using a proven feature detector that is known to not be
+patent encumbered. That is, the so called ORB feature detector~\cite{orb2011}.
+
+
+\subsubsection{Feature Matching}
+
+Once feature points have been found they need to be matched between images in
+order to be of further use. This process starts by iterating over all possible
+pairs of images and then computes the normalized Hamming distance for each pair
+of feature descriptors. After this, several passes of filtering is run to remove
+low quality matches. First, the Lowe criteria~\cite{sift2004} is applied,
+followed by a RANSAC~\cite{} estimation of the fundamental matrix between the
+remaining pairs.
+
+% TODO: Image showing example of pairwise feature matching.
+
+% TODO: Create pseudo-algorithm describing the matching procedure.
+
+The points that remain are now passed onward in the algorithm, where they will
+be filtered against multiple pairs of images.
+
+
+\subsubsection{Track Detection}
+
+Once all pairs of images have been matched, they are compiled into a graph where
+each vertex is an image keypoint and each edge represent a match between
+keypoints.
+
+% TODO: Create conceptual image of the image graph.
+
+Using graph processing techniques, is possible to use this graph to find
+keypoints that are common between multiple pairs of images. These collections of
+keypoints are now marked grouped into \emph{tracks}: A structure that represent
+a single 3D point that is presumably visible in multiple images.
+
+Additionally, pairs that are commutative i.e., image pair (A, B) finds the same
+keypoint as (B, A), are marked during this process, as they are very likely to
+correspond to a single 3D point, despite yielding a very small track.
+
+
+\subsubsection{Bundle Adjustment}
+
+Using the image tracks, the final step of the problem is creating and solving a
+non-linear system of equations on the form:
+%
+\begin{equation*}
+  \mathbf{x}_{j} = f(\mathbf{X}_{i})
+\end{equation*}
+%
+where $\mathbf{X}_{i}$ represents a 3D point in the scene and $\mathbf{x}_{j}$
+is the projected image point of $\mathbf{X_{i}}$ from camera $j$.
+
+Depending on the chosen camera model, $f(\cdot)$ can be a simple projective pin-hole
+camera on the form:
+%
+\begin{equation*}
+  f(\mathbf{X}_{i} =
+  K [R | t] \mathbf{X}_{i}
+\end{equation*}
+%
+Where $K$ is the intrinsic camera parameter matrix, $R$ is a rotation matrix and
+$t$ is a translation vector. Alternatively, $f(\cdot)$ can include rectification to
+adjust for a variety of camera distortion, which adds a number of parameters to
+the camera model.
+
+All of this is fed into \cite{ceres-software}, which performs
+auto-differentiation of the selected camera function to compute the Jacobian
+matrix necessary for the final step, which executes the Levenberg-Marquardt
+algorithm\cite{More78}, which solves our problem; estimating the intrinsic and
+extrinsic camera parameters as well as finding 3D coordinates for some points in
+the scene.
+
+
+\section{Results}
+
+\subsection{IMU}
+
+% TODO: IMU Results.
+
+\subsection{Vision}
+
+% TODO: 
+
+
+\section{Discussion}
+
+% IMU algorithm discussion.
+
+
+\subsection{Future Work}
+
+Computer vision is a very active field with many avenues of research. As such,
+there are many ways to improve or tune the algorithm as stated in this work.
+
+One thing that should be considered in this kind of setup with structured is the
+trifocal tensor~\cite{Martyushev_2017}, which should be able to help in camera
+setups similar to the ones in this work.
+
+Additionally, this work completely eschewed the use of object detection: In a
+larger system, detection of various objects could theoretically be used as a
+complement to this kind of system. E.g., if the system detects a person, it is
+possible to use a Gaussian approximation of the persons height as a feature
+point when estimating the intrinsic camera parameters.
+
+Finally, the system designed during this project is very slow with several
+points of synchronization. It would be interesting to see how well this problem,
+or a simplified version of it can be parallelized to multi-core systems or GPUs.
+
+
+\section{Conclusions}
+
+Nullam vulputate enim ut tortor mollis pharetra. Cras pellentesque sem a
+accumsan malesuada. Donec at massa nisl. Sed malesuada felis id nisl maximus
+efficitur. In pretium metus non faucibus pulvinar. Sed pulvinar elit ultrices
+mauris vehicula, id ultricies purus finibus. Fusce tempus elit molestie,
+consequat ipsum eget, iaculis nibh. Cras tincidunt, orci in lacinia tempus,
+mauris leo finibus orci, vitae dignissim dui risus et odio. Sed commodo
+ultricies nulla, et varius velit aliquam quis. Sed efficitur, ex non facilisis
+dignissim, lacus orci accumsan massa, dictum facilisis arcu lacus ac leo. Sed
+quis tellus dictum massa egestas dapibus vel et justo. Nulla euismod lectus ut
+purus hendrerit porttitor. Suspendisse quis dui ligula. Proin non porta
+libero. Maecenas vel feugiat urna.
+
+\begin{acks}
+\end{acks}
 
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{refs}
+
 \end{document}
