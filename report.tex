@@ -1,4 +1,4 @@
-\documentclass[acmtog]{acmart}
+\documentclass[preprint,acmtog]{acmart}
 
 \usepackage[utf8]{inputenc}
 \usepackage{booktabs} % For formal tables
@@ -122,6 +122,20 @@
 
 \section{Introduction}
 
+% TODO: IMU introduction merge.
+
+Cameras are an important component in many systems. And modern cameras are often
+equipped with additional features, such as varifocal lenses to allow them to
+adjust and zoom into various parts of any given scene. In order to use these
+cameras in larger systems, they must often be manually calibrated before
+use. This also means that the zooming features described above become
+unavailable, as changing the zoom would change the intrinsic parameters of the
+camera and would invalidate the calibration.
+
+For this reason, it is desirable to have a system that can automatically
+calibrate itself, preferably without prior knowledge scene it will be working
+inside.
+
 
 \begin{figure}[ht]
   \centering
@@ -184,8 +198,8 @@ order to be of further use. This process starts by iterating over all possible
 pairs of images and then computes the normalized Hamming distance for each pair
 of feature descriptors. After this, several passes of filtering is run to remove
 low quality matches. First, the Lowe criteria~\cite{sift2004} is applied,
-followed by a RANSAC~\cite{} estimation of the fundamental matrix between the
-remaining pairs.
+followed by a RANSAC~\cite{ransac} estimation of the fundamental matrix between
+the remaining pairs.
 
 % TODO: Image showing example of pairwise feature matching.
 
@@ -223,14 +237,13 @@ non-linear system of equations on the form:
 \end{equation*}
 %
 where $\mathbf{X}_{i}$ represents a 3D point in the scene and $\mathbf{x}_{j}$
-is the projected image point of $\mathbf{X_{i}}$ from camera $j$.
-
-Depending on the chosen camera model, $f(\cdot)$ can be a simple projective pin-hole
-camera on the form:
+is the projected image point of $\mathbf{X_{i}}$ from camera $j$. Depending on
+the chosen camera model, $f(\cdot)$ can be a simple projective pin-hole camera on
+the form:
 %
 \begin{equation*}
-  f(\mathbf{X}_{i} =
-  K [R | t] \mathbf{X}_{i}
+  f(\mathbf{X}_{i}) =
+  K \begin{bsmallmatrix}R & | & t\end{bsmallmatrix} \mathbf{X}_{i}
 \end{equation*}
 %
 Where $K$ is the intrinsic camera parameter matrix, $R$ is a rotation matrix and
@@ -238,12 +251,12 @@ $t$ is a translation vector. Alternatively, $f(\cdot)$ can include rectification
 adjust for a variety of camera distortion, which adds a number of parameters to
 the camera model.
 
-All of this is fed into \cite{ceres-software}, which performs
+All of this is fed into Ceres~\cite{ceres-solver}, which performs
 auto-differentiation of the selected camera function to compute the Jacobian
 matrix necessary for the final step, which executes the Levenberg-Marquardt
-algorithm\cite{More78}, which solves our problem; estimating the intrinsic and
-extrinsic camera parameters as well as finding 3D coordinates for some points in
-the scene.
+algorithm\cite{More78}, which ultimately solves our problem; estimating the
+intrinsic and extrinsic camera parameters as well as finding 3D coordinates for
+some points in the scene.
 
 
 \section{Results}
@@ -259,8 +272,9 @@ the scene.
 
 \section{Discussion}
 
-% IMU algorithm discussion.
+% TODO: IMU algorithm discussion...
 
+% TODO: Vision method discussion...
 
 \subsection{Future Work}
 
@@ -284,17 +298,7 @@ or a simplified version of it can be parallelized to multi-core systems or GPUs.
 
 \section{Conclusions}
 
-Nullam vulputate enim ut tortor mollis pharetra. Cras pellentesque sem a
-accumsan malesuada. Donec at massa nisl. Sed malesuada felis id nisl maximus
-efficitur. In pretium metus non faucibus pulvinar. Sed pulvinar elit ultrices
-mauris vehicula, id ultricies purus finibus. Fusce tempus elit molestie,
-consequat ipsum eget, iaculis nibh. Cras tincidunt, orci in lacinia tempus,
-mauris leo finibus orci, vitae dignissim dui risus et odio. Sed commodo
-ultricies nulla, et varius velit aliquam quis. Sed efficitur, ex non facilisis
-dignissim, lacus orci accumsan massa, dictum facilisis arcu lacus ac leo. Sed
-quis tellus dictum massa egestas dapibus vel et justo. Nulla euismod lectus ut
-purus hendrerit porttitor. Suspendisse quis dui ligula. Proin non porta
-libero. Maecenas vel feugiat urna.
+
 
 \begin{acks}
 \end{acks}
