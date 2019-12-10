@@ -137,6 +137,11 @@ calibrate itself, preferably without prior knowledge scene it will be working
 inside.
 
 
+\subsection{The Correspondence Problem}
+
+
+
+
 \begin{figure}[ht]
   \centering
   \includegraphics[width=\linewidth]{teapots}
@@ -265,6 +270,7 @@ some points in the scene.
 
 % TODO: IMU Results.
 
+
 \subsection{Vision}
 
 % TODO: 
@@ -274,16 +280,32 @@ some points in the scene.
 
 % TODO: IMU algorithm discussion...
 
-% TODO: Vision method discussion...
+
+The procedure outlined above only work to an extent: If image correspondence are
+found reliably between pairs of images. Unfortunately, this is a well known
+problem for computer vision algorithms and especially so for uncalibrated
+cameras used in this project.
+
+However, as seen in the reconstruction of one of our sample scenes: Evidently
+there are a lot of incorrect points but there are also a significant amount of
+correct points, as the general structure of the cube is clearly visible despite
+limited quality correspondence matching. Thus, it should be possible to re-use
+these results in longer pipeline with more elaborate filtering, such as the one
+described by \cite{ftc2016}.
+
+
 
 \subsection{Future Work}
 
 Computer vision is a very active field with many avenues of research. As such,
-there are many ways to improve or tune the algorithm as stated in this work.
+there are many ways to improve or tune the algorithm as stated in this work. In
+particular, there are many ways one could go about to filter the resulting image
+graph that should be able to significantly improve the multi-view correspondence
+matching.
 
-One thing that should be considered in this kind of setup with structured is the
-trifocal tensor~\cite{Martyushev_2017}, which should be able to help in camera
-setups similar to the ones in this work.
+Another thing that should be considered in this kind of setup with structured is
+the trifocal tensor~\cite{Martyushev_2017}, which should be able to help in
+camera setups similar to the ones in this work.
 
 Additionally, this work completely eschewed the use of object detection: In a
 larger system, detection of various objects could theoretically be used as a
