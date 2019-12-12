@@ -139,6 +139,9 @@ inside.
 
 \subsection{The Correspondence Problem}
 
+In computer vision, given two or more images from different vantage points of
+the same 3D scene, the correspondence problem refers to the task of finding sets
+of 2D points from these images that correspond to a single 3D point.
 
 
 \section{Related Work}
@@ -159,16 +162,12 @@ variation in camera poses inside the scene.
 
 \section{Method}
 
-\subsection{IMU Calibration}
-
-\subsection{Camera Calibration}
-
 The majority of the vision part of this project uses off the shelf components
 and algorithms from e.g., OpenCV~\cite{opencv_library} and
 Ceres~\cite{ceres-solver} to solve the various steps involved in this
 problem. All of which are described in detail below.
 
-\subsubsection{Feature Detection}
+\subsection{Feature Detection}
 
 The most important part for making sense of the scene is finding image
 coordinates that are representative of some particular property in the
@@ -179,7 +178,7 @@ paper we settled for using a proven feature detector that is known to not be
 patent encumbered. That is, the so called ORB feature detector~\cite{orb2011}.
 
 
-\subsubsection{Feature Matching}
+\subsection{Feature Matching}
 
 Once feature points have been found they need to be matched between images in
 order to be of further use. This process starts by iterating over all possible
@@ -202,7 +201,7 @@ The points that remain are now passed onward in the algorithm, where they will
 be filtered against multiple pairs of images.
 
 
-\subsubsection{Track Detection}
+\subsection{Track Detection}
 
 Once all pairs of images have been matched, they are compiled into a graph where
 each vertex is an image keypoint and each edge represent a match between
@@ -226,7 +225,7 @@ keypoint as (B, A), are marked during this process, as they are very likely to
 correspond to a single 3D point, despite yielding a very small track.
 
 
-\subsubsection{Bundle Adjustment}
+\subsection{Bundle Adjustment}
 
 Using the image tracks, the final step of the problem is creating and solving a
 non-linear system of equations on the form:
@@ -302,6 +301,10 @@ limited quality correspondence matching. Thus, it should be possible to re-use
 these results in longer pipeline with more elaborate filtering, such as the one
 described by \cite{ftc2016}.
 
+Additionally, as suggested in \cite{wilson_iccv2013_disambig} the approach of
+using graph and network algorithms to identify tracks appears to be well
+founded, but more work is needed to scale this problem down to the size posed by
+this project.
 
 
 \subsection{Future Work}
