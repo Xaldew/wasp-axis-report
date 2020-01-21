@@ -1,0 +1,52 @@
+#+TITLE: Problem Speech Cards
+#+AUTHOR: Gustaf Waldemarson
+#+OPTIONS: toc:nil author:nil
+
+* Problem Formulation Speech
+
+  
+** Slide 1
+*** Card 1
+    
+  And so we move from keys over to cameras. We all know that cameras are a very
+  useful tool; and in the field of computer vision alone we can use them detect
+  or track objects, or even infer 3Dimensional structures.
+
+  Some of these task normally requires the camera(s) to be calibrated
+  first. That is, we need to know some of the *intrinsic* parameters of the
+  camera(s).
+
+** Slide 2
+*** Card 2
+   
+  For most systems, this is okay. As the parameters can easily be estimated
+  manually *once*, and then be re-used for all subsequent uses.
+
+  However, many modern cameras have features such as motorized zooming or
+  varifocal optics that once used, will change the these parameters, forcing the
+  camera to be manually re-calibrated.
+
+  This might be okay for small systems, but for larger ones, with multiple
+  cameras, this quickly become unfeasible.
+
+#+LaTeX: \newpage
+  
+** Slide 2
+*** Card 3
+
+  The aim of this project is to remove this limitation: Find methods that can be
+  used to automatically calibrate each camera in a multi-camera setup without
+  using objects of known geometries as calibration proxies.
+
+  Additionally, this calibration problem is greatly simplified if the camera
+  position and orientation are known beforehand. Thus, the project also
+  investigates how clusters of IMUs can be used to provide this information.
+
+** Slide 3
+*** Card 4
+
+  Schematically, the system would work in this way: IMU and camera images are
+  received and passed to two separate algorithm; one estimates the position and
+  orientation using the IMU data, the other finds common features between images
+  and attempts to match them. This information is then finally combined to
+  estimate the various parameters, some of which are (unreadably) listed here.
