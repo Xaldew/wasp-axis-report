@@ -1,7 +1,7 @@
 ROOT          := $(CURDIR)
 TMP           := $(CURDIR)/build
-TEX_SRCS      := report.tex
-SVG_SRCS      := $(wildcard img/*.svg)
+TEX_SRCS      := report.tex beamer.tex pitch.tex
+SVG_SRCS      := $(wildcard img/*.svg) $(wildcard problem/*.svg)
 EXR_SRCS      := $(wildcard img/*.exr)
 PDF_OUT       := $(TEX_SRCS:.tex=.pdf)
 IMG_OUT       := $(EXR_SRCS:.exr=.png) $(SVG_SRCS:.svg=.pdf)

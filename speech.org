@@ -4,7 +4,6 @@
 
 * Problem Formulation Speech
 
-  
 ** Slide 1
 *** Card 1
     
@@ -50,3 +49,79 @@
   orientation using the IMU data, the other finds common features between images
   and attempts to match them. This information is then finally combined to
   estimate the various parameters, some of which are (unreadably) listed here.
+
+
+** Detection/Tracking/SfM Images
+
+   A camera is a very versatile instrument for a wide variety of tasks in
+   autonomous systems: It can be used to detect or track objects or even infer 3
+   dimensional structure of the objects it sees.
+
+** Pin-Hole Camera Image
+
+   This last task however normally requires the camera to be calibrated first;
+   i.e., given a pin-hole camera model, various *intrinsic* parameters need to
+   be computed, such as the focal length.
+
+** Checkerboard Image
+
+   For many systems, this is okay: as the parameters can easily estimated
+   manually using pattern with known geometries, such as checkerboards.
+
+** Modern Cameras: Axis/DSLR Images
+
+   However, many modern cameras have features such as motorized zooming or
+   varifocal optics and once a camera has been calibrated, these features cannot
+   be used anymore, as using them would change parameters, requiring the camera
+   to be re-calibrated.
+
+** Larger Setups
+
+   In small setups, this requires some manual intervention. For larger systems
+   however, where the cameras may be difficult or even impossible to reach,
+   different methods must be considered for the cameras to be usable.
+
+** Camera Graph Image
+
+   The aim of this project is to remove this limitation: Find methods that can
+   be used to automatically calibrate each camera in a multi-camera setup
+   without using objects of known geometry.
+
+** IMU Image
+
+   Additionally, this calibration problem be greatly simplified if the extrinsic
+   parameters, i.e., the camera position and orientation are known
+   beforehand. Thus, the project also investigates how clusters of IMUs can be
+   used to provide this information.
+
+
+** Martin IMU Image 1
+
+   For this project, we present a new method for fusing measurements from IMUs
+   mounted on a rigid platform such as the one shown here. The method only
+   requires three accelerometers and no gyroscopes, which allows it to use
+   simpler hardware than other existing methods.
+   
+   We also present a procedure for finding the orientation of the cameras when
+   using both the accelerometer and gyroscope. This process also makes no
+   assumptions on the motion of the platform: Such as requiring it to be
+   stationary or to be rotated only a certain way.
+
+** Martin Imu Images 2
+
+   These methods are tested and evaluated on real and synthetic data and while
+   initial results prove satisfactory, more work is needed for the methods to be
+   stable across multiple configurations of cameras.
+
+
+** Vision Results SfM
+
+   As for the camera calibration part of this project: We designed a system that
+   takes the position, orientation and image from each camera and attempts to
+   infer some 3D structure and the intrinsic parameters of the cameras.
+
+   Initial results show that the procedures developed during the project can
+   work. However, due to the limited time span of the project only a very small
+   amount of all the work necessary was completed and a lot more work is
+   necessary to create a completed system that can robustly estimate the
+   intrinsic camera parameters in the tested settings.
